@@ -20,24 +20,24 @@ Built entirely as a lightweight, self-contained web application (`index.html`), 
 ## ✨ Key Features & Interactive Labs
 
 1. **Distance-Vector Simulator ("Routing by Rumor"):**
-   * Walk step-by-step through the **Bellman-Ford equation** ($D_x(y) = \min_v \{c(x,v) + D_v(y)\}$) as neighbor nodes trade distance tables[cite: 3, 4, 7].
+   * Walk step-by-step through the **Bellman-Ford equation** ($D_x(y) = \min_v \{c(x,v) + D_v(y)\}$) as neighbor nodes trade distance tables.
    * Includes auto-play controls, speed tuning, and step-jumping timeline logs.
 
 2. **Link-State Simulator ("The Live Satellite GPS Map"):**
-   * Experience **Link-State Advertisement (LSA)** flooding and **Link-State Database (LSDB)** synchronization[cite: 3, 4, 7].
-   * Step through **Dijkstra’s Shortest Path First (SPF)** algorithm as tentative nodes lock into a loop-free shortest path tree[cite: 3, 4, 7].
+   * Experience **Link-State Advertisement (LSA)** flooding and **Link-State Database (LSDB)** synchronization.
+   * Step through **Dijkstra’s Shortest Path First (SPF)** algorithm as tentative nodes lock into a loop-free shortest path tree.
 
 3. **Live Map Customization & Roadblocks:**
-   * **Edit Link Costs Live:** Click any road cost badge on the map to modify weights ($1–15$) and watch the routing tables re-converge instantly[cite: 7].
-   * **Simulate Link Failures:** Click any road segment to introduce roadblocks and test how protocols handle network partitions[cite: 7].
+   * **Edit Link Costs Live:** Click any road cost badge on the map to modify weights ($1–15$) and watch the routing tables re-converge instantly.
+   * **Simulate Link Failures:** Click any road segment to introduce roadblocks and test how protocols handle network partitions.
 
 4. **RIP vs. OSPF Side-by-Side Comparison Lab:**
-   * Test why **RIP** (which counts junctions/hops blindly) and **OSPF** (which measures bandwidth cost and uses Area 0 hierarchies) choose completely different pathways on the exact same network map[cite: 3, 4, 7].
+   * Test why **RIP** (which counts junctions/hops blindly) and **OSPF** (which measures bandwidth cost and uses Area 0 hierarchies) choose completely different pathways on the exact same network map.
 
 5. **BGP Analogy & Case Study Storyboard:**
-   * Explores Inter-AS routing, **AS-PATH** loop prevention (passport stamp analogy), business policy selection, and a deep dive into the **October 2021 Facebook Global BGP Outage**[cite: 3, 4, 7].
+   * Explores Inter-AS routing, **AS-PATH** loop prevention (passport stamp analogy), business policy selection, and a deep dive into the **October 2021 Facebook Global BGP Outage**.
 
 6. **Comprehensive Summary Matrix & Exam Prep:**
-   * Includes a side-by-side comparison matrix, 5 core exam takeaways, and formal academic references (Kurose & Ross, Tanenbaum, and IETF RFCs)[cite: 3, 4, 7].
+   * Includes a side-by-side comparison matrix, 5 core exam takeaways, and formal academic references (Kurose & Ross, Tanenbaum, and IETF RFCs).
 
 ---
