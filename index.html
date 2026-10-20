@@ -1,0 +1,1946 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>RouteWise | Interactive Network Layer Routing Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg-warm: #f1f5f9;
+      --surface: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #334155;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+
+      --blue: #2563eb;
+      --blue-soft: #eff6ff;
+      --blue-border: #bfdbfe;
+
+      --teal: #0d9488;
+      --teal-soft: #f0fdfa;
+      --teal-border: #99f6e4;
+
+      --amber: #d97706;
+      --amber-soft: #fffbeb;
+      --amber-border: #fde68a;
+
+      --green: #16a34a;
+      --green-soft: #f0fdf4;
+      --green-border: #bbf7d0;
+
+      --rose: #e11d48;
+      --rose-soft: #fff1f2;
+      --rose-border: #fecdd3;
+
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+      --shadow-md: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Bright Editorial Header */
+    header {
+      background: linear-gradient(135deg, #eff6ff 0%, #f0fdfa 55%, #fffbeb 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 36px max(20px, calc((100% - 1220px) / 2)) 30px;
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--blue);
+      background: #ffffff;
+      border: 1px solid var(--blue-border);
+      padding: 5px 12px;
+      border-radius: 999px;
+      box-shadow: var(--shadow-sm);
+    }
+    h1 {
+      font-size: clamp(1.85rem, 3.4vw, 2.75rem);
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin: 0 0 10px;
+    }
+    h1 span {
+      color: var(--blue);
+    }
+    header p {
+      max-width: 780px;
+      color: var(--ink-soft);
+      font-size: 1.02rem;
+      margin: 0;
+    }
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+    .hero-chips span {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid var(--border);
+      color: var(--ink-soft);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    /* Sticky Clean Navigation */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px max(16px, calc((100% - 1220px) / 2));
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+    }
+    nav button {
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      white-space: nowrap;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    nav button:hover {
+      color: var(--ink);
+      background: var(--bg-warm);
+    }
+    nav button.active {
+      background: var(--blue-soft);
+      color: var(--blue);
+      border-color: var(--blue-border);
+      font-weight: 700;
+    }
+
+    /* Main Container & Sections */
+    main {
+      max-width: 1220px;
+      margin: 26px auto;
+      padding: 0 18px 48px;
+    }
+    .section { display: none; }
+    .section.active { display: block; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Cards & Typography */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-md);
+    }
+    .eyebrow {
+      display: inline-block;
+      font-size: 0.73rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--teal);
+      background: var(--teal-soft);
+      border: 1px solid var(--teal-border);
+      padding: 3px 9px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+    .eyebrow.amber { color: var(--amber); background: var(--amber-soft); border-color: var(--amber-border); }
+    .eyebrow.blue { color: var(--blue); background: var(--blue-soft); border-color: var(--blue-border); }
+    h2 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin: 0 0 10px;
+      color: var(--ink);
+    }
+    h3 {
+      font-size: 1.02rem;
+      font-weight: 700;
+      margin: 0 0 8px;
+      color: var(--ink);
+    }
+    .muted { color: var(--muted); font-size: 0.9rem; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* Grid Layouts */
+    .intro-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(350px, 0.85fr);
+      gap: 18px;
+      align-items: start;
+    }
+    .analogy-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .analogy-card {
+      padding: 13px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+    .analogy-card b {
+      display: block;
+      color: var(--ink);
+      font-size: 0.92rem;
+      margin-bottom: 3px;
+    }
+    .analogy-card span {
+      font-size: 0.82rem;
+      color: var(--muted);
+      display: block;
+      line-height: 1.4;
+    }
+
+    /* Pre-learning Banner above Simulator */
+    .concept-banner {
+      background: linear-gradient(to right, #ffffff, #f8fafc);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--blue);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-bottom: 18px;
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 18px;
+      align-items: center;
+    }
+    .concept-banner.teal { border-left-color: var(--teal); }
+    .concept-banner p { margin: 4px 0 0; color: var(--ink-soft); font-size: 0.92rem; }
+    .formula-box {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: var(--blue);
+      box-shadow: var(--shadow-sm);
+    }
+    .formula-box small {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Interactive Controls Toolbar */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      margin: 12px 0;
+    }
+    .toolbar-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .toolbar label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--ink-soft);
+    }
+    .toolbar select {
+      font: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 6px 10px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      color: var(--ink);
+      cursor: pointer;
+    }
+    .btn {
+      font: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      padding: 7px 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+    .btn.primary {
+      background: var(--blue);
+      color: #ffffff;
+      box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
+    }
+    .btn.primary:hover:not(:disabled) { background: #1d4ed8; }
+    .btn.secondary {
+      background: var(--surface);
+      color: var(--ink-soft);
+      border-color: var(--border-strong);
+    }
+    .btn.secondary:hover:not(:disabled) { background: var(--bg-warm); color: var(--ink); }
+    .btn.ghost {
+      background: transparent;
+      color: var(--muted);
+    }
+    .btn.ghost:hover:not(:disabled) { background: var(--border); color: var(--ink); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* Interactive SVG Network Map */
+    .canvas-wrap {
+      position: relative;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .canvas-hint {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+      padding: 7px 12px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    svg.net-svg {
+      width: 100%;
+      height: auto;
+      min-height: 290px;
+      display: block;
+      background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+      background-size: 18px 18px;
+      user-select: none;
+    }
+    .edge {
+      stroke: #cbd5e1;
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      transition: stroke 0.25s, stroke-width 0.25s;
+    }
+    .edge.route {
+      stroke: var(--green);
+      stroke-width: 6;
+    }
+    .edge.focus {
+      stroke: var(--amber);
+      stroke-width: 5.5;
+      stroke-dasharray: 8 5;
+    }
+    .edge.disabled {
+      stroke: #fecdd3;
+      stroke-width: 2.5;
+      stroke-dasharray: 4 6;
+    }
+    .weight-badge {
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .weight-badge:hover rect {
+      stroke: var(--blue);
+      stroke-width: 2;
+      fill: var(--blue-soft);
+    }
+    .weight-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      fill: var(--ink);
+      font-weight: 700;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+    .node { cursor: pointer; }
+    .node circle {
+      fill: #ffffff;
+      stroke: #64748b;
+      stroke-width: 2.5;
+      transition: all 0.2s ease;
+    }
+    .node:hover circle { stroke: var(--blue); stroke-width: 3.5; }
+    .node text {
+      font-size: 14px;
+      font-weight: 800;
+      fill: var(--ink);
+      text-anchor: middle;
+      pointer-events: none;
+    }
+    .node.src circle { fill: var(--blue-soft); stroke: var(--blue); stroke-width: 4; }
+    .node.dst circle { fill: var(--amber-soft); stroke: var(--amber); stroke-width: 4; }
+    .node.done circle { fill: var(--green-soft); stroke: var(--green); stroke-width: 3.5; }
+    .node.active-now circle { filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.35)); }
+
+    /* Live Step Callout Banner under Map */
+    .live-narration {
+      background: var(--blue-soft);
+      border: 1px solid var(--blue-border);
+      border-radius: var(--radius-md);
+      padding: 12px 15px;
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .live-narration b {
+      display: block;
+      font-size: 0.88rem;
+      color: #1e40af;
+      margin-bottom: 2px;
+    }
+    .live-narration p {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--ink-soft);
+    }
+
+    /* Metric Pills */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .metric {
+      border: 1px solid var(--border);
+      background: var(--bg);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+    }
+    .metric small {
+      display: block;
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .metric b {
+      font-size: 1.05rem;
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: -1px;
+    }
+
+    /* Step Timeline List */
+    .step-list {
+      display: grid;
+      gap: 6px;
+      max-height: 230px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .step {
+      border: 1px solid var(--border);
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .step:hover { border-color: var(--blue-border); background: #f8fafc; }
+    .step.active {
+      border-color: var(--blue);
+      border-left-width: 4px;
+      background: var(--blue-soft);
+    }
+    .step b { font-size: 0.85rem; color: var(--ink); display: block; }
+    .step p { margin: 2px 0 0; color: var(--ink-soft); font-size: 0.83rem; }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    th {
+      background: var(--bg);
+      color: var(--ink-soft);
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+
+    /* Side-by-side Explain Cards */
+    .explain-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .explain {
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg);
+    }
+    .explain b { display: block; margin-bottom: 4px; color: var(--ink); font-size: 0.92rem; }
+    .explain p { margin: 0; font-size: 0.85rem; color: var(--ink-soft); }
+
+    /* BGP Storyboard Cards */
+    .story-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .story-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+    .story-card .step-num {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 99px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      margin-bottom: 8px;
+    }
+    .callout {
+      border-left: 4px solid var(--teal);
+      background: var(--teal-soft);
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      margin: 12px 0;
+      font-size: 0.88rem;
+      color: var(--ink-soft);
+    }
+    .callout b { display: block; color: var(--ink); margin-bottom: 2px; }
+
+    .footer {
+      max-width: 1220px;
+      margin: auto;
+      padding: 20px 18px 36px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.84rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .intro-grid, .workspace, .concept-banner, .story-grid { grid-template-columns: 1fr; }
+      .analogy-grid, .explain-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px) {
+      .analogy-grid, .explain-grid, .metric-grid { grid-template-columns: 1fr; }
+    }
+
+
+    /* RouteWise Studio theme — restrained colour, depth and motion */
+    :root {
+      --bg: #f6f7f3;
+      --bg-warm: #eef2ed;
+      --surface: #fffefa;
+      --ink: #202b2a;
+      --ink-soft: #455451;
+      --muted: #71807b;
+      --border: #e0e7e1;
+      --border-strong: #c9d6ce;
+      --blue: #356b66;
+      --blue-soft: #eaf3ef;
+      --blue-border: #c7ddd4;
+      --teal: #47877a;
+      --teal-soft: #edf6f1;
+      --teal-border: #c9e2d5;
+      --amber: #b87545;
+      --amber-soft: #fbf1e8;
+      --amber-border: #ead2bc;
+      --green: #39836a;
+      --green-soft: #eaf5ee;
+      --green-border: #c9e3d1;
+      --rose: #bd665d;
+      --rose-soft: #fbefec;
+      --rose-border: #edcfca;
+      --radius-lg: 18px;
+      --radius-md: 13px;
+      --radius-sm: 9px;
+      --shadow-sm: 0 2px 5px rgba(34, 56, 49, .035), 0 1px 2px rgba(34, 56, 49, .025);
+      --shadow-md: 0 8px 24px rgba(34, 56, 49, .055), 0 2px 5px rgba(34, 56, 49, .025);
+      --shadow-hover: 0 16px 32px rgba(34, 56, 49, .095), 0 5px 12px rgba(34, 56, 49, .04);
+    }
+
+    body {
+      background: var(--bg);
+      background-image: radial-gradient(ellipse at 8% 0%, rgba(218, 235, 224, .34), transparent 34%),
+                        radial-gradient(ellipse at 100% 18%, rgba(247, 229, 211, .22), transparent 28%);
+      color: var(--ink);
+    }
+
+    header {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      background: linear-gradient(118deg, #edf4ed 0%, #f7f6ef 54%, #f8eee5 100%);
+      border-bottom: 1px solid #dce5dd;
+      padding-top: 30px;
+      padding-bottom: 32px;
+    }
+    header::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      width: 360px;
+      height: 360px;
+      right: max(-100px, calc((100vw - 1220px) / 2 - 65px));
+      top: -210px;
+      border: 1px solid rgba(53, 107, 102, .12);
+      border-radius: 50%;
+      box-shadow: 0 0 0 28px rgba(53, 107, 102, .035), 0 0 0 58px rgba(53, 107, 102, .025);
+      pointer-events: none;
+    }
+    header::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      width: 190px;
+      height: 190px;
+      right: max(100px, calc((100vw - 1220px) / 2 + 90px));
+      bottom: -145px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.35);
+      filter: blur(2px);
+      pointer-events: none;
+    }
+    .badge-pill {
+      color: #356b66;
+      background: rgba(255, 254, 250, .78);
+      border-color: #c9dcd2;
+      box-shadow: 0 2px 7px rgba(43, 75, 63, .045);
+      letter-spacing: .055em;
+    }
+    h1 { letter-spacing: -.045em; font-weight: 800; }
+    h1 span {
+      color: #356b66;
+      background: linear-gradient(100deg, #356b66, #588778 70%, #a56f4e);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    header p { max-width: 760px; }
+    .hero-chips span {
+      background: rgba(255, 254, 250, .72);
+      border-color: rgba(201, 216, 205, .85);
+      box-shadow: 0 2px 5px rgba(43, 75, 63, .025);
+      transition: transform .22s ease, background .22s ease, border-color .22s ease;
+    }
+    .hero-chips span:hover { transform: translateY(-2px); background: #fffefa; border-color: #a9c9ba; }
+
+    nav {
+      background: rgba(255, 254, 250, .91);
+      border-bottom-color: #e0e7e1;
+      box-shadow: 0 5px 18px rgba(35, 57, 49, .035);
+      backdrop-filter: blur(16px) saturate(135%);
+    }
+    nav button { border-radius: 8px; transition: background .2s ease, color .2s ease, transform .2s ease; }
+    nav button:hover { background: #edf2ed; transform: translateY(-1px); }
+    nav button.active { background: #e6f0e9; color: #2f665b; border-color: #c8ddd0; }
+
+    main { margin-top: 28px; }
+    .card {
+      background: rgba(255, 254, 250, .96);
+      border-color: #e1e8e1;
+      box-shadow: 0 3px 12px rgba(34, 56, 49, .025), 0 1px 2px rgba(34, 56, 49, .025);
+      transition: transform .28s cubic-bezier(.2,.75,.25,1), box-shadow .28s ease, border-color .28s ease;
+      transform-style: preserve-3d;
+    }
+    .card:hover {
+      border-color: #d2dfd5;
+      box-shadow: var(--shadow-md);
+    }
+    .eyebrow { letter-spacing: .075em; border-radius: 5px; }
+    .concept-banner {
+      background: linear-gradient(110deg, #fffefa 0%, #f3f6f0 100%);
+      border-color: #dce6dd;
+      box-shadow: var(--shadow-sm);
+    }
+    .concept-banner.teal { background: linear-gradient(110deg, #fffefa 0%, #edf5ef 100%); }
+    .formula-box {
+      background: #fffefa;
+      border-color: #dce5dd;
+      box-shadow: inset 0 1px 0 #fff, 0 3px 9px rgba(34, 56, 49, .04);
+    }
+    .analogy-card, .explain, .story-card {
+      background: #f7f8f3;
+      border-color: #e1e8e0;
+      transition: transform .25s cubic-bezier(.2,.75,.25,1), box-shadow .25s ease, border-color .25s ease, background .25s ease;
+      transform-style: preserve-3d;
+    }
+    .analogy-card:hover, .explain:hover, .story-card:hover {
+      transform: perspective(800px) translateY(-3px) rotateX(1deg);
+      background: #fffefa;
+      border-color: #cbded1;
+      box-shadow: 0 10px 20px rgba(34, 56, 49, .055);
+    }
+    .toolbar { background: #f4f6f1; border-color: #e0e7df; }
+    .toolbar select {
+      border-color: #d2ddd4;
+      border-radius: 8px;
+      outline-color: #8bb7a4;
+    }
+    .toolbar select:focus-visible, button:focus-visible, select:focus-visible {
+      outline: 3px solid rgba(71, 135, 122, .24);
+      outline-offset: 2px;
+    }
+    .btn {
+      border-radius: 8px;
+      transition: transform .16s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+    }
+    .btn:active:not(:disabled) { transform: translateY(1px) scale(.985); }
+    .btn.primary {
+      background: #356b66;
+      box-shadow: 0 3px 0 #244f4a, 0 5px 12px rgba(53, 107, 102, .12);
+    }
+    .btn.primary:hover:not(:disabled) {
+      background: #2d605b;
+      box-shadow: 0 4px 0 #244f4a, 0 8px 16px rgba(53, 107, 102, .17);
+      transform: translateY(-1px);
+    }
+    .btn.secondary { background: #fffefa; border-color: #d5dfd6; }
+    .btn.secondary:hover:not(:disabled) { background: #edf4ee; border-color: #bcd2c3; transform: translateY(-1px); }
+    .btn.ghost:hover:not(:disabled) { background: #e9efea; }
+
+    .canvas-wrap {
+      border-color: #dfe7df;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+      background: #fffefa;
+    }
+    .canvas-hint { background: #f4f6f1; border-bottom-color: #e1e8e0; }
+    svg.net-svg {
+      background-color: #fffefa;
+      background-image: radial-gradient(#dce6dd .85px, transparent .85px);
+      background-size: 20px 20px;
+    }
+    .edge { stroke: #c4d0c7; transition: stroke .28s ease, stroke-width .28s ease, opacity .28s ease; }
+    .edge.route { stroke: #39836a; filter: drop-shadow(0 2px 2px rgba(57,131,106,.15)); }
+    .edge.focus { stroke: #c1844c; }
+    .node circle { stroke: #789087; filter: drop-shadow(0 2px 1px rgba(35,57,49,.08)); }
+    .node.src circle { fill: #e7f1eb; stroke: #356b66; }
+    .node.dst circle { fill: #fbf0e5; stroke: #b87545; }
+    .node.done circle { fill: #e7f3e9; stroke: #39836a; }
+    .node.active-now circle { filter: drop-shadow(0 0 5px rgba(53,107,102,.3)); animation: nodeBreathe 2.2s ease-in-out infinite; }
+    @keyframes nodeBreathe { 0%,100% { filter: drop-shadow(0 0 2px rgba(53,107,102,.16)); } 50% { filter: drop-shadow(0 0 8px rgba(53,107,102,.28)); } }
+
+    .live-narration {
+      background: #edf3f8;
+      border-color: #d0e0e9;
+      box-shadow: inset 3px 0 0 #6f9eab;
+    }
+    .live-narration b { color: #356b66; }
+    .metric { background: #f6f7f2; border-color: #e1e7df; }
+    .metric b { color: #2e6058; }
+    .step { border-color: #e1e7df; }
+    .step:hover { border-color: #bfd7c9; background: #f8faf6; }
+    .step.active { border-color: #8db8a2; background: #edf5ef; }
+    th { background: #f1f4ee; }
+    td, th { border-bottom-color: #e4e9e2; }
+    .table-wrap { border-color: #dfe6df; }
+    .callout { background: #edf5f0; border-left-color: #5e9b83; }
+    .footer { border-top-color: #dfe7df; }
+
+    /* Small depth cues make the UI feel tactile without distracting from learning. */
+    .story-card { box-shadow: 0 2px 5px rgba(34,56,49,.025); }
+    .story-card .step-num { background: #e6f0e9; color: #356b66; }
+    .weight-badge rect { transition: fill .18s ease, stroke .18s ease, filter .18s ease; }
+    .weight-badge:hover rect { filter: drop-shadow(0 3px 3px rgba(53,107,102,.13)); }
+    .section.active { animation: sectionArrive .26s ease both; }
+    @keyframes sectionArrive { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+    @media (max-width: 700px) {
+      header { padding-top: 24px; }
+      .card { padding: 17px; }
+      .card:hover, .analogy-card:hover, .explain:hover, .story-card:hover { transform: none; }
+    }
+
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span class="badge-pill">🌐 Computer Networks · CA-3 Interactive Guide</span>
+      <span class="badge-pill" style="background:rgba(255,255,255,.72);border-color:rgba(53,107,102,.20);color:var(--ink);">Published by: Vardhan Shah · PRN: 24070126195</span>
+    </div>
+    <span class="muted" style="font-size:0.82rem;font-weight:600;">Unit: The Network Layer</span>
+  </div>
+  <h1>RouteWise: <span>How the Internet Finds Its Way</span></h1>
+  <p>An interactive learning platform for exploring Network Layer routing concepts through hands-on simulations and visual analysis. Experiment with Distance-Vector and Link-State algorithms, compare RIP and OSPF under identical network conditions, and explore the role of BGP in global internet routing through practical, real-world analogies.</p>
+  <div class="hero-chips">
+    <span>🚗 Road-Trip Analogy</span>
+    <span>🕹️ Step-by-Step Interactive Labs</span>
+    <span>✏️ Click Any Road Weight to Edit</span>
+    <span>⚡ Click Any Link to Simulate Roadblocks</span>
+  </div>
+</header>
+
+<nav id="nav">
+  <button class="active" data-tab="home">1. Start & Analogy</button>
+  <button data-tab="dv">2. Distance-Vector Simulator</button>
+  <button data-tab="ls">3. Link-State (Dijkstra) Simulator</button>
+  <button data-tab="protocols">4. RIP vs. OSPF Lab</button>
+  <button data-tab="bgp">5. BGP Analogy & Case Study</button>
+  <button data-tab="compare">6. Summary & Comparison</button>
+</nav>
+
+<main>
+
+  <!-- ==================== TAB 1: HOME & ANALOGY ==================== -->
+  <section class="section active" id="home">
+    <div class="intro-grid">
+      <div class="card">
+        <span class="eyebrow blue">The Core Analogy</span>
+        <h2>Packets on the Highway: Forwarding vs. Routing</h2>
+        <p>When you send a request from your laptop in Pune to a cloud server, your data is sliced into <b>packets</b>. Think of each packet as a car driving across a national expressway network where <b>routers</b> are highway intersections.</p>
+        <div class="explain-grid">
+          <div class="explain" style="background:var(--blue-soft);border-color:var(--blue-border);">
+            <b>🚦 Forwarding (The Data Plane)</b>
+            <p>The fast, local action at a single junction. A packet arrives, the router checks its local signpost (<b>Forwarding Table</b>), and pushes the packet out the right exit ramp.</p>
+          </div>
+          <div class="explain" style="background:var(--teal-soft);border-color:var(--teal-border);">
+            <b>🗺️ Routing (The Control Plane)</b>
+            <p>The network-wide intelligence that builds those signposts in the first place. Routers talk to each other using <b>Routing Algorithms</b> to discover the best end-to-end paths.</p>
+          </div>
+        </div>
+        <div class="analogy-grid">
+          <div class="analogy-card">
+            <b>🚗 IP Packet</b>
+            <span>A car carrying data toward a destination address</span>
+          </div>
+          <div class="analogy-card">
+            <b>🔀 Router</b>
+            <span>Highway interchange deciding which exit to take</span>
+          </div>
+          <div class="analogy-card">
+            <b>🛣️ Link Cost</b>
+            <span>Toll fee, road congestion, or inverse bandwidth</span>
+          </div>
+          <div class="analogy-card">
+            <b>🧭 Routing Table</b>
+            <span>The highway signboards telling cars the next hop</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="eyebrow amber">Interactive Features</span>
+        <h2>How to Use This Lab</h2>
+        <p class="muted">We kept the simulations focused strictly on the core algorithms so you can see every calculation clearly:</p>
+        <ol style="padding-left:18px;color:var(--ink-soft);font-size:0.9rem;display:grid;gap:8px;">
+          <li><b>Step Back & Forth:</b> Use <b>← Prev</b>, <b>Next →</b>, or <b>Auto-Play</b> to watch routing tables converge one decision at a time.</li>
+          <li><b>Edit Road Costs Live:</b> Click any numbered badge on a road to change its link cost (1–15) and watch the algorithm adapt.</li>
+          <li><b>Simulate Roadblocks:</b> Hold <code>Shift</code> and click any road (or use the toggle button) to break a link and see how routers reroute around failures!</li>
+          <li><b>Compare Side-by-Side:</b> See why <b>RIP</b> (hop count) and <b>OSPF</b> (bandwidth cost) pick completely different highways on the exact same map.</li>
+        </ol>
+        <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn primary" onclick="go('dv')">Start Lab 1: Distance-Vector →</button>
+          <button class="btn secondary" onclick="go('ls')">Jump to Link-State →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="eyebrow">Syllabus Roadmap</span>
+      <h2>Your 4-Step Journey Through Network Layer Routing</h2>
+      <div class="analogy-grid" style="margin-top:10px;">
+        <div class="analogy-card" style="background:#fff;">
+          <b>01 · Distance-Vector (DV)</b>
+          <span>"Routing by Rumor." Routers only talk to immediate neighbors using the Bellman-Ford equation.</span>
+          <button class="btn secondary" style="margin-top:10px;width:100%;justify-content:center;" onclick="go('dv')">Simulate DV →</button>
+        </div>
+        <div class="analogy-card" style="background:#fff;">
+          <b>02 · Link-State (LS)</b>
+          <span>"The Live GPS Map." Routers flood link statuses to build a complete map and run Dijkstra's SPF.</span>
+          <button class="btn secondary" style="margin-top:10px;width:100%;justify-content:center;" onclick="go('ls')">Simulate LS →</button>
+        </div>
+        <div class="analogy-card" style="background:#fff;">
+          <b>03 · RIP vs. OSPF</b>
+          <span>Compare real Intra-AS protocols: counting junctions (hops) vs. measuring highway speed (bandwidth).</span>
+          <button class="btn secondary" style="margin-top:10px;width:100%;justify-content:center;" onclick="go('protocols')">Compare RIP & OSPF →</button>
+        </div>
+        <div class="analogy-card" style="background:#fff;">
+          <b>04 · BGP & Case Study</b>
+          <span>International customs between Autonomous Systems + the famous 2021 Facebook global BGP outage.</span>
+          <button class="btn secondary" style="margin-top:10px;width:100%;justify-content:center;" onclick="go('bgp')">Read BGP Analogy →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 2: DISTANCE-VECTOR SIMULATOR ==================== -->
+  <section class="section" id="dv">
+    <div class="concept-banner">
+      <div>
+        <span class="eyebrow blue">Algorithm 01 · Distance-Vector ("Routing by Rumor")</span>
+        <h2>Asking Officers at Each Junction</h2>
+        <p>Imagine driving without a map. At each junction, you ask the local traffic officer how far your destination is. The officer doesn't have a state map either—he only knows the distance to his immediate neighbor junctions and what those neighbors told him. Every router repeatedly applies the <b>Bellman-Ford Equation</b>:</p>
+      </div>
+      <div class="formula-box">
+        Dₓ(y) = minᵥ { c(x,v) + Dᵥ(y) }
+        <small>Cost to neighbour v + neighbour v's rumoured distance to y</small>
+      </div>
+    </div>
+
+    <div class="workspace">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+          <div>
+            <h2>Interactive Distance-Vector Simulator</h2>
+            <p class="muted" style="margin:0;">Watch how Router <b id="dvSrcLabel">A</b> learns the cheapest path to <b id="dvDstLabel">F</b> through neighbor rumors.</p>
+          </div>
+          <button class="btn secondary" onclick="resetTopology()" title="Restore original road weights">↺ Reset Map Weights</button>
+        </div>
+
+        <div class="toolbar">
+          <div class="toolbar-group">
+            <label>From</label><select id="dvSrc"></select>
+            <label>To</label><select id="dvDst"></select>
+          </div>
+          <div class="toolbar-group">
+            <button class="btn secondary" id="dvPrev">← Prev</button>
+            <button class="btn primary" id="dvNext">Next Step →</button>
+            <button class="btn secondary" id="dvPlay">▶ Auto</button>
+            <select id="dvSpeed" title="Animation Speed">
+              <option value="950">0.7x</option>
+              <option value="600" selected>1x</option>
+              <option value="300">2x</option>
+            </select>
+            <button class="btn ghost" id="dvReset">Reset</button>
+          </div>
+        </div>
+
+        <div class="canvas-wrap">
+          <div class="canvas-hint">
+            <span>💡 <b>Tip:</b> Click any road number badge to edit its cost (1–15).</span>
+            <span>🔧 Click a grey road line to toggle a <b>Roadblock (Link Failure)</b>.</span>
+          </div>
+          <svg id="dvSvg" class="net-svg" viewBox="0 0 600 320" aria-label="Distance vector topology"></svg>
+        </div>
+
+        <div class="live-narration" id="dvBanner">
+          <div>
+            <b id="dvBannerTitle">Ready to simulate</b>
+            <p id="dvBannerText">Press "Next Step →" or "▶ Auto" to watch neighbor distance vectors spread across the network.</p>
+          </div>
+          <span class="badge-pill" id="dvCount">Step 0</span>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric"><small>Best Cost Found</small><b id="dvCost">—</b></div>
+          <div class="metric"><small>Selected Highway Path</small><b id="dvPath">—</b></div>
+          <div class="metric"><small>Convergence Status</small><b id="dvStatusText">Initial</b></div>
+        </div>
+
+        <div class="legend">
+          <span><i class="dot" style="background:var(--blue)"></i>Source Router</span>
+          <span><i class="dot" style="background:var(--amber)"></i>Destination Router</span>
+          <span><i class="dot" style="background:var(--green)"></i>Converged Shortest Route</span>
+          <span><i class="dot" style="background:#f59e0b"></i>Dashed Orange = Rumor Being Checked</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="eyebrow">Beside the Simulation · How DV Works</span>
+        <h2>Live Distance-Vector Table (<span id="dvTableOwner">Router A</span>)</h2>
+        <p class="muted" style="margin-top:0;">As neighbors share their routing tables, watch how infinity (∞) entries turn into concrete costs and refine toward the minimum.</p>
+        <div class="table-wrap" id="dvTable"></div>
+
+        <h3 style="margin-top:18px;">Step-by-Step Calculation Log (Click any step to jump)</h3>
+        <div class="step-list" id="dvSteps"></div>
+
+        <div class="callout" style="margin-top:16px;">
+          <b>⚠️ Why "Bad News Travels Slowly" (Count-to-Infinity)</b>
+          Because DV routers only hear second-hand rumors from neighbors without seeing the full map, if a link breaks, two neighbors can accidentally bounce stale routes back and forth (e.g., cost 3 → 5 → 7 → 9...). Protocols fix this using <b>Split Horizon</b> (never advertise a route back to the neighbor you learned it from) and <b>Poison Reverse</b>.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 3: LINK-STATE SIMULATOR ==================== -->
+  <section class="section" id="ls">
+    <div class="concept-banner teal">
+      <div>
+        <span class="eyebrow">Algorithm 02 · Link-State ("The Live Satellite GPS")</span>
+        <h2>Full Map First, Shortest Path Second</h2>
+        <p>Instead of trading rumors at junctions, every router broadcasts a <b>Link-State Advertisement (LSA)</b> listing its direct neighbors and link costs to <i>every</i> router in the network. Once every router has the exact same complete map (<b>LSDB</b>), it runs <b>Dijkstra’s Shortest Path First (SPF)</b> algorithm:</p>
+      </div>
+      <div class="formula-box" style="color:var(--teal);">
+        1. Flood LSAs → 2. Build LSDB → 3. Run Dijkstra SPF
+        <small>Repeatedly finalize the closest unvisited node & relax its outgoing links</small>
+      </div>
+    </div>
+
+    <div class="workspace">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+          <div>
+            <h2>Interactive Link-State (Dijkstra SPF) Simulator</h2>
+            <p class="muted" style="margin:0;">Watch <b id="lsSrcLabel">A</b> build its shortest-path tree by locking in green finalized routers one by one.</p>
+          </div>
+          <button class="btn secondary" onclick="resetTopology()" title="Restore original road weights">↺ Reset Map Weights</button>
+        </div>
+
+        <div class="toolbar">
+          <div class="toolbar-group">
+            <label>From</label><select id="lsSrc"></select>
+            <label>To</label><select id="lsDst"></select>
+          </div>
+          <div class="toolbar-group">
+            <button class="btn secondary" id="lsPrev">← Prev</button>
+            <button class="btn primary" id="lsNext">Next Step →</button>
+            <button class="btn secondary" id="lsPlay">▶ Auto</button>
+            <select id="lsSpeed" title="Animation Speed">
+              <option value="950">0.7x</option>
+              <option value="600" selected>1x</option>
+              <option value="300">2x</option>
+            </select>
+            <button class="btn ghost" id="lsReset">Reset</button>
+          </div>
+        </div>
+
+        <div class="canvas-wrap">
+          <div class="canvas-hint">
+            <span>💡 <b>Tip:</b> Click any weight badge to change road cost.</span>
+            <span>🔧 Click any road line to simulate a broken fiber link.</span>
+          </div>
+          <svg id="lsSvg" class="net-svg" viewBox="0 0 600 320" aria-label="Link state topology"></svg>
+        </div>
+
+        <div class="live-narration" id="lsBanner" style="background:var(--teal-soft);border-color:var(--teal-border);">
+          <div>
+            <b id="lsBannerTitle" style="color:#0f766e;">LSDB Map Synchronized</b>
+            <p id="lsBannerText">Press "Next Step →" to run Dijkstra's Shortest Path First algorithm from the source router.</p>
+          </div>
+          <span class="badge-pill" id="lsCount" style="color:var(--teal);border-color:var(--teal-border);">Step 0</span>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric"><small>Shortest Path Cost</small><b id="lsCost">—</b></div>
+          <div class="metric"><small>Shortest Path Tree Route</small><b id="lsPath">—</b></div>
+          <div class="metric"><small>Finalized Routers</small><b id="lsDoneCount">0 / 6</b></div>
+        </div>
+
+        <div class="legend">
+          <span><i class="dot" style="background:var(--blue)"></i>Source</span>
+          <span><i class="dot" style="background:var(--amber)"></i>Destination</span>
+          <span><i class="dot" style="background:var(--green)"></i>Finalized in SPF Tree</span>
+          <span><i class="dot" style="background:#f59e0b"></i>Edge Relaxation Check</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="eyebrow">Beside the Simulation · How Link-State Works</span>
+        <h2>Dijkstra SPF Candidate Table</h2>
+        <p class="muted" style="margin-top:0;">In each round, Dijkstra picks the <b>Tentative</b> router with the smallest cost, marks it <b>Finalized</b>, and checks if its outgoing roads offer a shortcut to neighbors.</p>
+        <div class="table-wrap" id="lsTable"></div>
+
+        <h3 style="margin-top:18px;">Dijkstra Execution Log (Click any step to inspect)</h3>
+        <div class="step-list" id="lsSteps"></div>
+
+        <div class="explain-grid" style="margin-top:14px;">
+          <div class="explain">
+            <b>✅ Fast, Loop-Free Convergence</b>
+            <p>Because every router computes its routes from the exact same LSDB map, transient routing loops and count-to-infinity are virtually eliminated.</p>
+          </div>
+          <div class="explain">
+            <b>⚖️ Higher Memory & CPU Cost</b>
+            <p>Flooding LSAs and storing the full topology graph requires more memory and CPU than simple neighbor rumors.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 4: RIP vs OSPF INTERACTIVE COMPARISON ==================== -->
+  <section class="section" id="protocols">
+    <div class="concept-banner">
+      <div>
+        <span class="eyebrow amber">Intra-AS Protocols · Inside One Organization</span>
+        <h2>Why RIP and OSPF Pick Different Highways on the Same Map</h2>
+        <p>Inside a single Autonomous System (like a university campus or ISP core), networks run an <b>Interior Gateway Protocol (IGP)</b>. Below, test how <b>RIP</b> (which only counts junctions/hops) and <b>OSPF</b> (which measures highway bandwidth cost) choose completely different paths between the exact same routers!</p>
+      </div>
+      <div class="formula-box" style="color:var(--amber);">
+        RIP = Minimum Hop Count (Max 15)<br>
+        OSPF = Minimum Bandwidth Cost
+      </div>
+    </div>
+
+    <div class="workspace">
+      <div class="card">
+        <h2>Side-by-Side Route Finder: RIP vs. OSPF</h2>
+        <div class="toolbar">
+          <div class="toolbar-group">
+            <label>Source</label><select id="protoSrc"></select>
+            <label>Destination</label><select id="protoDst"></select>
+          </div>
+          <div class="toolbar-group">
+            <button class="btn primary" id="modeBoth" onclick="setProtoMode('both')">Show Both</button>
+            <button class="btn secondary" id="modeRip" onclick="setProtoMode('rip')">RIP Only (Hops)</button>
+            <button class="btn secondary" id="modeOspf" onclick="setProtoMode('ospf')">OSPF Only (Cost)</button>
+          </div>
+        </div>
+
+        <div class="canvas-wrap">
+          <div class="canvas-hint">
+            <span>🛣️ <b>Try A → D or A → F:</b> Notice how A → C → D is only 2 hops, while A → B → C → D is 3 hops but lower cost!</span>
+          </div>
+          <svg id="protoSvg" class="net-svg" viewBox="0 0 600 320" aria-label="RIP vs OSPF comparison topology"></svg>
+        </div>
+
+        <div class="explain-grid" style="margin-top:14px;">
+          <div class="explain" style="background:var(--amber-soft);border-color:var(--amber-border);">
+            <b style="color:var(--amber);">🟠 RIP Path (Counts Hops Only)</b>
+            <p id="ripSummaryText" style="font-weight:700;font-size:0.95rem;color:var(--ink);margin:4px 0;">—</p>
+            <p>Treats every road as cost = 1 hop, even if a direct road is a slow, congested lane.</p>
+          </div>
+          <div class="explain" style="background:var(--green-soft);border-color:var(--green-border);">
+            <b style="color:var(--green);">🟢 OSPF Path (Minimizes Road Cost)</b>
+            <p id="ospfSummaryText" style="font-weight:700;font-size:0.95rem;color:var(--ink);margin:4px 0;">—</p>
+            <p>Prefers fast multi-lane fiber expressways even if the packet passes through an extra junction.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="eyebrow">Protocol Deep Dive</span>
+        <h2>How RIP and OSPF Work in Real Networks</h2>
+
+        <div class="explain" style="margin-bottom:12px;">
+          <b>1. RIP (Routing Information Protocol) — The Junction Counter</b>
+          <p style="margin-top:4px;">• <b>Algorithm:</b> Distance-Vector (Bellman-Ford).<br>
+          • <b>Metric:</b> Pure Hop Count (every router = 1 hop). Maximum valid path is <b>15 hops</b>; 16 means unreachable (infinity) to cap count-to-infinity loops.<br>
+          • <b>Updates:</b> Routers broadcast their full routing table to immediate neighbors every <b>30 seconds</b> over UDP port 520.<br>
+          • <b>Limitation:</b> Completely blind to bandwidth—it prefers 2 hops over slow copper to 3 hops over 10 Gbps fiber.</p>
+        </div>
+
+        <div class="explain">
+          <b>2. OSPF (Open Shortest Path First) — The Smart City GPS</b>
+          <p style="margin-top:4px;">• <b>Algorithm:</b> Link-State (floods LSAs, builds an LSDB, runs Dijkstra's SPF).<br>
+          • <b>Metric:</b> Link cost inversely proportional to bandwidth (e.g., 10 Gbps fiber has a much lower cost than 100 Mbps Ethernet).<br>
+          • <b>Hierarchical Scaling with Areas:</b> To stop LSA flooding from overwhelming huge networks, OSPF divides an organization into smaller <b>Areas</b> connected through a central hub called <b>Backbone Area 0</b>.</p>
+        </div>
+
+        <div class="callout" style="margin-top:14px;">
+          <b>💡 Key Exam Insight</b>
+          Both RIP and OSPF are <b>Interior Gateway Protocols (IGPs)</b>—they only route traffic <i>inside</i> a single organization's Autonomous System (AS).
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 5: BGP ANALOGY & CASE STUDY (NO COMPLEX SIMULATOR) ==================== -->
+  <section class="section" id="bgp">
+    <div class="card" style="margin-bottom:18px;">
+      <span class="eyebrow blue">Inter-AS Routing · Connecting the Whole Internet</span>
+      <h2>BGP (Border Gateway Protocol): International Customs & Air Traffic Control</h2>
+      <p>Why can’t OSPF or RIP just run across the entire global Internet? Two reasons: <b>Scale</b> (millions of routers would drown in flooded LSAs) and <b>Privacy & Policy</b> (ISPs like Jio, Airtel, and cloud giants like AWS or Netflix do not want competitors seeing their internal router maps or forcing traffic through their cables for free).</p>
+      <p style="margin-bottom:0;">To solve this, the Internet is divided into independent kingdoms called <b>Autonomous Systems (AS)</b>, each with a unique number (ASN). Inside an AS, organizations run <b>RIP or OSPF</b>. Between different ASes, the entire world uses one protocol: <b>BGP</b>.</p>
+
+      <!-- Clean Visual Diagram of Autonomous Systems & BGP -->
+      <div class="canvas-wrap" style="margin:18px 0;padding:16px;background:#f8fafc;">
+        <svg viewBox="0 0 780 210" style="width:100%;height:auto;display:block;">
+          <!-- AS 100 Box -->
+          <rect x="15" y="20" width="230" height="170" rx="16" fill="#eff6ff" stroke="#93c5fd" stroke-width="2" stroke-dasharray="6 4"/>
+          <text x="130" y="45" text-anchor="middle" font-weight="800" font-size="13" fill="#1e40af">AS 100: Campus Network</text>
+          <text x="130" y="63" text-anchor="middle" font-size="11" fill="#3b82f6">Runs OSPF Internally (Fastest Path)</text>
+          <circle cx="65" cy="115" r="18" fill="#fff" stroke="#2563eb" stroke-width="2.5"/><text x="65" y="120" text-anchor="middle" font-weight="700" font-size="12">R1</text>
+          <circle cx="130" cy="150" r="18" fill="#fff" stroke="#2563eb" stroke-width="2.5"/><text x="130" y="155" text-anchor="middle" font-weight="700" font-size="12">R2</text>
+          <circle cx="195" cy="115" r="21" fill="#dbeafe" stroke="#1d4ed8" stroke-width="3"/><text x="195" y="119" text-anchor="middle" font-weight="800" font-size="11">ASBR</text>
+          <line x1="81" y1="123" x2="114" y2="142" stroke="#60a5fa" stroke-width="2.5"/>
+          <line x1="146" y1="142" x2="176" y2="125" stroke="#60a5fa" stroke-width="2.5"/>
+          <line x1="83" y1="115" x2="174" y2="115" stroke="#60a5fa" stroke-width="2.5"/>
+
+          <!-- AS 200 Box -->
+          <rect x="295" y="20" width="200" height="170" rx="16" fill="#fffbeb" stroke="#fcd34d" stroke-width="2" stroke-dasharray="6 4"/>
+          <text x="395" y="45" text-anchor="middle" font-weight="800" font-size="13" fill="#92400e">AS 200: Transit ISP</text>
+          <text x="395" y="63" text-anchor="middle" font-size="11" fill="#d97706">Carries Traffic via BGP Policy</text>
+          <circle cx="340" cy="115" r="21" fill="#fef3c7" stroke="#d97706" stroke-width="3"/><text x="340" y="119" text-anchor="middle" font-weight="800" font-size="11">ASBR</text>
+          <circle cx="450" cy="115" r="21" fill="#fef3c7" stroke="#d97706" stroke-width="3"/><text x="450" y="119" text-anchor="middle" font-weight="800" font-size="11">ASBR</text>
+          <line x1="361" y1="115" x2="429" y2="115" stroke="#f59e0b" stroke-width="3"/>
+
+          <!-- AS 300 Box -->
+          <rect x="545" y="20" width="220" height="170" rx="16" fill="#f0fdf4" stroke="#86efac" stroke-width="2" stroke-dasharray="6 4"/>
+          <text x="655" y="45" text-anchor="middle" font-weight="800" font-size="13" fill="#166534">AS 300: Cloud Data Center</text>
+          <text x="655" y="63" text-anchor="middle" font-size="11" fill="#16a34a">Runs OSPF / IS-IS to Server</text>
+          <circle cx="590" cy="115" r="21" fill="#dcfce7" stroke="#16a34a" stroke-width="3"/><text x="590" y="119" text-anchor="middle" font-weight="800" font-size="11">ASBR</text>
+          <circle cx="710" cy="115" r="20" fill="#fff" stroke="#16a34a" stroke-width="2.5"/><text x="710" y="119" text-anchor="middle" font-weight="700" font-size="11">Srv</text>
+          <line x1="611" y1="115" x2="690" y2="115" stroke="#4ade80" stroke-width="2.5"/>
+
+          <!-- eBGP Red Links -->
+          <line x1="216" y1="115" x2="319" y2="115" stroke="#e11d48" stroke-width="4"/>
+          <rect x="233" y="88" width="70" height="20" rx="5" fill="#fff1f2" stroke="#fecdd3"/>
+          <text x="268" y="102" text-anchor="middle" font-weight="800" font-size="10" fill="#e11d48">eBGP (TCP)</text>
+
+          <line x1="471" y1="115" x2="569" y2="115" stroke="#e11d48" stroke-width="4"/>
+          <rect x="485" y="88" width="70" height="20" rx="5" fill="#fff1f2" stroke="#fecdd3"/>
+          <text x="520" y="102" text-anchor="middle" font-weight="800" font-size="10" fill="#e11d48">eBGP (TCP)</text>
+
+          <text x="395" y="178" text-anchor="middle" font-family="JetBrains Mono, monospace" font-weight="700" font-size="11" fill="#334155">
+            Advertised BGP AS-PATH to Campus: "AS 200 → AS 300"
+          </text>
+        </svg>
+      </div>
+
+      <div class="story-grid">
+        <div class="story-card">
+          <span class="step-num">Concept 01 · Path-Vector</span>
+          <h3>Passport Stamps (AS-PATH)</h3>
+          <p class="muted" style="margin:0;">Instead of advertising link costs, BGP stamps every route advertisement with the list of Autonomous Systems it has crossed (e.g., <code>AS 200 → AS 300</code>). Just like a customs officer checking passport stamps, if a border router sees its <b>own AS number</b> already in the list, it immediately rejects the route—stopping loops effortlessly!</p>
+        </div>
+        <div class="story-card">
+          <span class="step-num">Concept 02 · Policy First</span>
+          <h3>Diplomacy Over Raw Speed</h3>
+          <p class="muted" style="margin:0;">Imagine an airline choosing international flight paths. Even if flying over Country X is 20 minutes shorter, the airline won't fly there if they don't have a treaty or if transit fees are too high. Similarly, BGP chooses routes based on <b>business contracts</b> (Customer, Peer, Provider) first, and uses path length only as a tie-breaker.</p>
+        </div>
+        <div class="story-card">
+          <span class="step-num">Concept 03 · eBGP vs. iBGP</span>
+          <h3>Border Gate vs. Internal Memo</h3>
+          <p class="muted" style="margin:0;">BGP runs over <b>TCP port 179</b>. Border routers use <b>eBGP (External BGP)</b> to learn routes from neighboring countries (other ASes), and <b>iBGP (Internal BGP)</b> to distribute those international reachability memos to routers inside their own AS.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="intro-grid">
+      <div class="card">
+        <span class="eyebrow amber">Real-World Case Study A</span>
+        <h2>Tracing One Packet: From Pune Campus to Netflix / AWS</h2>
+        <ol style="padding-left:18px;color:var(--ink-soft);font-size:0.9rem;display:grid;gap:8px;margin-bottom:0;">
+          <li><b>Inside Campus (OSPF):</b> Your laptop sends a packet to your campus default gateway. Campus routers use <b>OSPF</b> to zip the packet along fast internal fiber to the Campus Border Router.</li>
+          <li><b>Crossing to the ISP (eBGP Handoff):</b> OSPF ends at the campus gate. The border router checks its <b>BGP</b> table, picks the approved AS-PATH to the cloud provider, and hands the packet to the ISP.</li>
+          <li><b>Inside the Cloud (OSPF / IS-IS):</b> After crossing ISP border links via eBGP, the packet enters the cloud data center’s AS, where internal Link-State routing carries it to the final web server.</li>
+        </ol>
+      </div>
+
+      <div class="card" style="background:var(--rose-soft);border-color:var(--rose-border);">
+        <span class="eyebrow" style="background:#fff;color:var(--rose);border-color:var(--rose-border);">Real-World Case Study B</span>
+        <h2 style="color:#881337;">The 2021 Facebook Global BGP Outage</h2>
+        <p style="color:#4c0519;font-size:0.9rem;">On October 4, 2021, Facebook, Instagram, and WhatsApp vanished from the Internet for 6 hours. Their servers weren't hacked—a maintenance command accidentally triggered a withdrawal of Facebook's <b>BGP route advertisements</b>.</p>
+        <p style="color:#4c0519;font-size:0.9rem;margin-bottom:0;"><b>In our highway analogy:</b> All of Facebook's cities, roads, and buildings were completely fine inside, but they accidentally erased their country from every international border map. No router on Earth knew which highway exit led to Facebook!</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 6: FINAL SUMMARY & COMPARISON ==================== -->
+  <section class="section" id="compare">
+    <div class="card">
+      <span class="eyebrow blue">Final Synthesis</span>
+      <h2>Summary & Master Comparison Matrix</h2>
+      <p class="muted" style="margin-top:0;">A side-by-side cheat sheet contrasting the two routing algorithm families (Distance-Vector & Link-State) and the three major Internet routing protocols (RIP, OSPF, and BGP).</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Dimension</th>
+              <th>Distance-Vector (DV)</th>
+              <th>Link-State (LS)</th>
+              <th>RIP (v2)</th>
+              <th>OSPF (v2)</th>
+              <th>BGP (v4)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>Category</th>
+              <td>Algorithm Family</td>
+              <td>Algorithm Family</td>
+              <td>Intra-AS Protocol (IGP)</td>
+              <td>Intra-AS Protocol (IGP)</td>
+              <td>Inter-AS Protocol (EGP)</td>
+            </tr>
+            <tr>
+              <th>Road Analogy</th>
+              <td>Asking officers at junctions ("Routing by Rumor")</td>
+              <td>Live satellite GPS with a full road map</td>
+              <td>Counting junctions passed (ignores road width)</td>
+              <td>City smart-GPS preferring fast expressways</td>
+              <td>International customs & airline border treaties</td>
+            </tr>
+            <tr>
+              <th>Core Math / Logic</th>
+              <td>Bellman–Ford Equation</td>
+              <td>Dijkstra’s Shortest Path First (SPF)</td>
+              <td>Distributed Bellman–Ford</td>
+              <td>LSDB + Dijkstra SPF</td>
+              <td>Path-Vector (AS-PATH + Policy)</td>
+            </tr>
+            <tr>
+              <th>Network Visibility</th>
+              <td>Partial (only knows neighbors' rumors)</td>
+              <td>Complete map of domain (stored in LSDB)</td>
+              <td>Neighbors' hop-count tables</td>
+              <td>Full topology within an Area</td>
+              <td>Sequence of AS numbers (AS-PATH)</td>
+            </tr>
+            <tr>
+              <th>Metric Used</th>
+              <td>Generic link cost</td>
+              <td>Generic link cost</td>
+              <td><b>Hop Count</b> (Max 15; 16 = ∞)</td>
+              <td><b>Bandwidth-based cost</b></td>
+              <td><b>Business Policy</b> & Path Attributes</td>
+            </tr>
+            <tr>
+              <th>Convergence & Loops</th>
+              <td>Slow; vulnerable to Count-to-Infinity</td>
+              <td>Fast; loop-free once LSDB syncs</td>
+              <td>Slow (periodic 30s UDP updates)</td>
+              <td>Fast (event-triggered LSA flooding over IP)</td>
+              <td>Loop-free via AS-PATH check (runs over TCP 179)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="intro-grid" style="margin-top:18px;">
+      <div class="card">
+        <span class="eyebrow">Exam Revision</span>
+        <h2>5 Key Takeaways to Remember</h2>
+        <ol style="padding-left:18px;color:var(--ink-soft);font-size:0.92rem;display:grid;gap:8px;margin-bottom:0;">
+          <li><b>Forwarding vs. Routing:</b> Forwarding moves a packet across a single router using a table (Data Plane); Routing calculates the paths that build that table (Control Plane).</li>
+          <li><b>Distance-Vector (Bellman-Ford):</b> Routers exchange distance estimates with direct neighbors only. Simple overhead, but bad news travels slowly (fixed via Split Horizon).</li>
+          <li><b>Link-State (Dijkstra):</b> Routers flood LSAs to build an identical Link-State Database (LSDB) map and compute shortest-path trees independently.</li>
+          <li><b>RIP vs. OSPF:</b> RIP counts hops (max 15) and ignores link speed; OSPF weights links by bandwidth and scales using Areas connected to Area 0.</li>
+          <li><b>BGP Glues the Internet Together:</b> Connects independent Autonomous Systems (AS), prevents loops using <code>AS-PATH</code>, and puts business policy ahead of raw speed.</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <span class="eyebrow amber">References</span>
+        <h2>Academic Reading List</h2>
+        <ul style="padding-left:18px;color:var(--ink-soft);font-size:0.9rem;display:grid;gap:8px;margin-bottom:0;">
+          <li><b>Kurose, J. F., & Ross, K. W. (2021).</b> <i>Computer Networking: A Top-Down Approach</i> (8th ed.). Pearson. Chapter 5: The Network Layer: Control Plane.</li>
+          <li><b>Tanenbaum, A. S., & Wetherall, D. J. (2021).</b> <i>Computer Networks</i> (6th ed.). Pearson. Chapter 5: The Network Layer.</li>
+          <li><b>IETF Standards:</b> RFC 2453 (RIP v2), RFC 2328 (OSPF v2), and RFC 4271 (BGP-4).</li>
+          <li><b>Cloudflare & Meta Engineering (2021):</b> Post-mortem analysis of the October 4, 2021 global BGP withdrawal outage.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <span><b>RouteWise Interactive Lab</b> · Computer Networks Continuous Assessment (CA-3)</span>
+  <span>Built with pure HTML, CSS & SVG · Click road weights or links in any simulator to customize the map</span>
+</footer>
+
+<script>
+  const nodes = ['A', 'B', 'C', 'D', 'E', 'F'];
+  const pos = {
+    A: [65, 160],
+    B: [185, 62],
+    C: [185, 258],
+    D: [345, 115],
+    E: [410, 258],
+    F: [535, 160]
+  };
+
+  // Default edges: [node1, node2, cost, enabled]
+  const defaultEdges = [
+    ['A', 'B', 2, true],
+    ['A', 'C', 5, true],
+    ['B', 'C', 1, true],
+    ['B', 'D', 2, true],
+    ['C', 'D', 2, true],
+    ['C', 'E', 3, true],
+    ['D', 'E', 1, true],
+    ['D', 'F', 5, true],
+    ['E', 'F', 2, true]
+  ];
+  let edges = structuredClone(defaultEdges);
+
+  const $ = id => document.getElementById(id);
+
+  // Navigation Tabs
+  function go(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === id));
+    document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => go(b.dataset.tab)));
+
+  // Populate Select Dropdowns
+  function fillSelect(id, selected) {
+    $(id).innerHTML = nodes.map(n => `<option value="${n}" ${n === selected ? 'selected' : ''}>Router ${n}</option>`).join('');
+  }
+  ['dvSrc', 'lsSrc', 'protoSrc'].forEach(id => fillSelect(id, 'A'));
+  ['dvDst', 'lsDst', 'protoDst'].forEach(id => fillSelect(id, 'F'));
+
+  // Build adjacency list from active edges
+  function buildGraph(metric = 'weight') {
+    const g = {};
+    nodes.forEach(n => g[n] = []);
+    edges.forEach(([a, b, w, enabled]) => {
+      if (!enabled) return;
+      const cost = metric === 'hop' ? 1 : w;
+      g[a].push([b, cost]);
+      g[b].push([a, cost]);
+    });
+    return g;
+  }
+
+  function reconstructPath(prev, s, d) {
+    const path = [];
+    let curr = d, guard = 0;
+    while (curr && guard++ <= nodes.length) {
+      path.unshift(curr);
+      if (curr === s) break;
+      curr = prev[curr];
+    }
+    return path[0] === s ? path : [];
+  }
+
+  // Dijkstra SPF Simulation Generator
+  function runDijkstra(s, d, metric = 'weight') {
+    const g = buildGraph(metric);
+    const dist = {}, prev = {}, done = new Set(), log = [];
+    nodes.forEach(n => { dist[n] = Infinity; prev[n] = null; });
+    dist[s] = 0;
+
+    log.push({
+      title: `Initialize LSDB & Start at Router ${s}`,
+      text: `Set distance to source ${s} = 0, and all other routers to ∞. Every router has the complete map in its Link-State Database.`,
+      dist: { ...dist }, prev: { ...prev }, done: [], current: s
+    });
+
+    while (done.size < nodes.length) {
+      let u = null;
+      nodes.forEach(n => {
+        if (!done.has(n) && (u === null || dist[n] < dist[u])) u = n;
+      });
+      if (u === null || dist[u] === Infinity) break;
+      done.add(u);
+
+      log.push({
+        title: `Lock In (Finalize) Router ${u} at Cost ${dist[u]}`,
+        text: `Among all unvisited routers, ${u} has the lowest tentative cost (${dist[u]}). We permanently lock in ${u} and inspect its outgoing highways.`,
+        dist: { ...dist }, prev: { ...prev }, done: [...done], current: u
+      });
+
+      for (const [v, w] of g[u]) {
+        if (done.has(v)) continue;
+        const cand = dist[u] + w;
+        const old = dist[v];
+        if (cand < old) {
+          dist[v] = cand;
+          prev[v] = u;
+          log.push({
+            title: `Shortcut Found on Road ${u} → ${v} (New Cost: ${cand})`,
+            text: `Reaching ${u} costs ${dist[u]}, plus road ${u}→${v} (cost ${w}) = ${cand}. That beats ${v}'s old estimate (${old === Infinity ? '∞' : old}), so update ${v}!`,
+            dist: { ...dist }, prev: { ...prev }, done: [...done], current: u, edge: [u, v]
+          });
+        } else {
+          log.push({
+            title: `Check Road ${u} → ${v} (Keep Cost ${old})`,
+            text: `Path through ${u} costs ${dist[u]} + ${w} = ${cand}, which is not cheaper than ${v}'s current best estimate (${old}). No change.`,
+            dist: { ...dist }, prev: { ...prev }, done: [...done], current: u, edge: [u, v]
+          });
+        }
+      }
+    }
+
+    const path = reconstructPath(prev, s, d);
+    log.push({
+      title: path.length ? `Shortest Path Tree Complete!` : `Destination Unreachable`,
+      text: path.length
+        ? `Optimal path from ${s} to ${d} is ${path.join(' → ')} with total cost ${dist[d]}.`
+        : `No active path connects ${s} to ${d} (check disabled roadblocks).`,
+      dist: { ...dist }, prev: { ...prev }, done: [...done], path
+    });
+
+    return { log, dist, prev, path, cost: dist[d] };
+  }
+
+  // Distance-Vector Simulation Generator
+  function runDistanceVector(s, d) {
+    const g = buildGraph('weight');
+    const dist = {}, next = {}, log = [];
+    nodes.forEach(x => {
+      dist[x] = {}; next[x] = {};
+      nodes.forEach(y => {
+        dist[x][y] = x === y ? 0 : Infinity;
+        next[x][y] = x === y ? x : null;
+      });
+    });
+
+    edges.forEach(([a, b, w, enabled]) => {
+      if (!enabled) return;
+      dist[a][b] = w; next[a][b] = b;
+      dist[b][a] = w; next[b][a] = a;
+    });
+
+    log.push({
+      title: `Initial State: Local Neighbours Only`,
+      text: `Router ${s} only knows the cost to its directly attached neighbours. Distant destinations start as unknown (∞).`,
+      dist: structuredClone(dist), next: structuredClone(next), current: s
+    });
+
+    let changed = true, round = 0;
+    while (changed && round < 8) {
+      changed = false;
+      round++;
+      for (const x of nodes) {
+        for (const [v, c] of g[x]) {
+          for (const y of nodes) {
+            if (dist[v][y] === Infinity) continue;
+            const cand = c + dist[v][y];
+            if (cand < dist[x][y]) {
+              const old = dist[x][y];
+              dist[x][y] = cand;
+              next[x][y] = next[x][v] || v;
+              changed = true;
+              if (x === s || y === d) {
+                log.push({
+                  title: `Round ${round}: ${x} Hears Rumor from Neighbour ${v} about ${y}`,
+                  text: `Neighbour ${v} reports it can reach ${y} in cost ${dist[v][y]}. Since road ${x}→${v} costs ${c}, total via ${v} is ${c} + ${dist[v][y]} = ${cand} (beats old cost ${old === Infinity ? '∞' : old}).`,
+                  dist: structuredClone(dist), next: structuredClone(next), current: x, edge: [x, v]
+                });
+              }
+            }
+          }
+        }
+      }
+    }
+
+    const path = [s];
+    let cur = s, guard = 0;
+    while (cur !== d && guard++ <= nodes.length) {
+      cur = next[cur][d];
+      if (!cur) break;
+      path.push(cur);
+    }
+    const validPath = path[path.length - 1] === d ? path : [];
+
+    log.push({
+      title: validPath.length ? `Distance Vectors Converged!` : `Destination Unreachable`,
+      text: validPath.length
+        ? `No neighbour has a cheaper rumor left to share. Final route from ${s} to ${d}: ${validPath.join(' → ')} (Total Cost: ${dist[s][d]}).`
+        : `Router ${s} cannot reach ${d} because a required highway link is blocked.`,
+      dist: structuredClone(dist), next: structuredClone(next), path: validPath
+    });
+
+    return { log, path: validPath, cost: dist[s][d] };
+  }
+
+  function pathEdgeSet(path) {
+    const set = new Set();
+    for (let i = 1; i < (path || []).length; i++) {
+      set.add([path[i - 1], path[i]].sort().join('-'));
+    }
+    return set;
+  }
+
+  // Interactive SVG Renderer (supports clicking weights & toggling links)
+  function drawInteractiveMap(svgId, state, s, d, interactive = true) {
+    const svg = $(svgId);
+    const activeRoute = pathEdgeSet(state && state.path);
+    const focusKey = state && state.edge ? [...state.edge].sort().join('-') : null;
+    let html = '';
+
+    edges.forEach(([a, b, w, enabled], idx) => {
+      const [x1, y1] = pos[a], [x2, y2] = pos[b];
+      const key = [a, b].sort().join('-');
+      const isRoute = enabled && activeRoute.has(key);
+      const isFocus = enabled && focusKey === key;
+
+      const edgeClass = `edge ${!enabled ? 'disabled' : ''} ${isRoute ? 'route' : ''} ${isFocus ? 'focus' : ''}`;
+      html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${edgeClass}" style="cursor:${interactive ? 'pointer' : 'default'}" onclick="${interactive ? `toggleEdge(${idx})` : ''}">
+        <title>Click line to toggle roadblock on ${a}–${b}</title>
+      </line>`;
+
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      html += `<g class="weight-badge" onclick="${interactive ? `editWeight(${idx}, event)` : ''}">
+        <title>Click to edit road cost for ${a}–${b}</title>
+        <rect x="${mx - 15}" y="${my - 12}" width="30" height="24" rx="6" fill="${enabled ? '#ffffff' : '#fff1f2'}" stroke="${enabled ? '#cbd5e1' : '#fda4af'}" stroke-width="1.5"/>
+        <text x="${mx}" y="${my + 4}" class="weight-text" fill="${enabled ? '#0f172a' : '#e11d48'}">${enabled ? w : '✕'}</text>
+      </g>`;
+    });
+
+    nodes.forEach(n => {
+      const [x, y] = pos[n];
+      const isDone = state && state.done && state.done.includes(n);
+      const isCurrent = state && state.current === n;
+      const cls = `node ${n === s ? 'src' : ''} ${n === d ? 'dst' : ''} ${isDone ? 'done' : ''} ${isCurrent ? 'active-now' : ''}`;
+      html += `<g class="${cls}">
+        <circle cx="${x}" cy="${y}" r="23"/>
+        <text x="${x}" y="${y + 5}">${n}</text>
+      </g>`;
+    });
+
+    svg.innerHTML = html;
+  }
+
+  // Edit edge weight or toggle roadblock
+  window.editWeight = function(idx, ev) {
+    ev.stopPropagation();
+    const [a, b, w, enabled] = edges[idx];
+    if (!enabled) {
+      edges[idx][3] = true;
+      refreshAllLabs();
+      return;
+    }
+    const input = prompt(`Enter new link cost for road ${a}–${b} (1 to 15):`, w);
+    if (input === null) return;
+    const val = parseInt(input, 10);
+    if (!isNaN(val) && val >= 1 && val <= 15) {
+      edges[idx][2] = val;
+      refreshAllLabs();
+    }
+  };
+
+  window.toggleEdge = function(idx) {
+    edges[idx][3] = !edges[idx][3];
+    refreshAllLabs();
+  };
+
+  window.resetTopology = function() {
+    edges = structuredClone(defaultEdges);
+    refreshAllLabs();
+  };
+
+  // ==================== DV CONTROLLER ====================
+  let dvData, dvIdx = 0, dvTimer = null;
+
+  function stopDvAuto() {
+    if (dvTimer) { clearInterval(dvTimer); dvTimer = null; }
+    $('dvPlay').textContent = '▶ Auto';
+  }
+
+  function renderDv() {
+    const s = $('dvSrc').value, d = $('dvDst').value;
+    $('dvSrcLabel').textContent = s;
+    $('dvDstLabel').textContent = d;
+    $('dvTableOwner').textContent = `Router ${s}`;
+
+    const st = dvData.log[dvIdx];
+    drawInteractiveMap('dvSvg', st, s, d, true);
+
+    $('dvBannerTitle').textContent = `${dvIdx + 1}. ${st.title}`;
+    $('dvBannerText').textContent = st.text;
+    $('dvCount').textContent = `Step ${dvIdx + 1} / ${dvData.log.length}`;
+
+    const isLast = dvIdx === dvData.log.length - 1;
+    $('dvCost').textContent = isLast ? (dvData.cost === Infinity ? '∞ (Blocked)' : dvData.cost) : (st.dist[s][d] === Infinity ? '∞' : st.dist[s][d]);
+    $('dvPath').textContent = isLast ? (dvData.path.length ? dvData.path.join(' → ') : 'Unreachable') : 'Calculating...';
+    $('dvStatusText').textContent = isLast ? 'Converged' : 'Sharing Rumors';
+
+    $('dvPrev').disabled = dvIdx <= 0;
+    $('dvNext').disabled = isLast;
+
+    $('dvSteps').innerHTML = dvData.log.map((item, i) => `
+      <div class="step ${i === dvIdx ? 'active' : ''}" onclick="jumpDv(${i})">
+        <b>${i + 1}. ${item.title}</b>
+        <p>${item.text}</p>
+      </div>
+    `).join('');
+    $('dvSteps').children[dvIdx]?.scrollIntoView({ block: 'nearest' });
+
+    const vec = st.dist[s];
+    const nxt = st.next[s];
+    $('dvTable').innerHTML = `<table>
+      <thead><tr><th>Destination</th><th>Best Known Cost</th><th>Next Hop Junction</th></tr></thead>
+      <tbody>${nodes.map(n => `
+        <tr style="${n === d ? 'background:var(--amber-soft);font-weight:700;' : ''}">
+          <td>Router ${n} ${n === d ? '🎯' : ''}</td>
+          <td class="mono">${vec[n] === Infinity ? '∞' : vec[n]}</td>
+          <td>${n === s ? 'Self (0)' : (nxt[n] ? `Via ${nxt[n]}` : '—')}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+  }
+
+  window.jumpDv = function(i) { stopDvAuto(); dvIdx = i; renderDv(); };
+
+  function initDv() {
+    stopDvAuto();
+    dvData = runDistanceVector($('dvSrc').value, $('dvDst').value);
+    dvIdx = 0;
+    renderDv();
+  }
+
+  $('dvPrev').onclick = () => { stopDvAuto(); if (dvIdx > 0) { dvIdx--; renderDv(); } };
+  $('dvNext').onclick = () => { stopDvAuto(); if (dvIdx < dvData.log.length - 1) { dvIdx++; renderDv(); } };
+  $('dvReset').onclick = initDv;
+  $('dvSrc').onchange = initDv;
+  $('dvDst').onchange = initDv;
+  $('dvPlay').onclick = () => {
+    if (dvTimer) { stopDvAuto(); return; }
+    if (dvIdx >= dvData.log.length - 1) dvIdx = 0;
+    $('dvPlay').textContent = '⏸ Pause';
+    dvTimer = setInterval(() => {
+      if (dvIdx < dvData.log.length - 1) { dvIdx++; renderDv(); }
+      else stopDvAuto();
+    }, parseInt($('dvSpeed').value, 10));
+  };
+
+  // ==================== LINK-STATE CONTROLLER ====================
+  let lsData, lsIdx = 0, lsTimer = null;
+
+  function stopLsAuto() {
+    if (lsTimer) { clearInterval(lsTimer); lsTimer = null; }
+    $('lsPlay').textContent = '▶ Auto';
+  }
+
+  function renderLs() {
+    const s = $('lsSrc').value, d = $('lsDst').value;
+    $('lsSrcLabel').textContent = s;
+    const st = lsData.log[lsIdx];
+    drawInteractiveMap('lsSvg', st, s, d, true);
+
+    $('lsBannerTitle').textContent = `${lsIdx + 1}. ${st.title}`;
+    $('lsBannerText').textContent = st.text;
+    $('lsCount').textContent = `Step ${lsIdx + 1} / ${lsData.log.length}`;
+
+    const isLast = lsIdx === lsData.log.length - 1;
+    $('lsCost').textContent = st.dist[d] === Infinity ? '∞' : st.dist[d];
+    $('lsPath').textContent = isLast ? (lsData.path.length ? lsData.path.join(' → ') : 'Unreachable') : 'Building Tree...';
+    $('lsDoneCount').textContent = `${(st.done || []).length} / ${nodes.length}`;
+
+    $('lsPrev').disabled = lsIdx <= 0;
+    $('lsNext').disabled = isLast;
+
+    $('lsSteps').innerHTML = lsData.log.map((item, i) => `
+      <div class="step ${i === lsIdx ? 'active' : ''}" onclick="jumpLs(${i})">
+        <b>${i + 1}. ${item.title}</b>
+        <p>${item.text}</p>
+      </div>
+    `).join('');
+    $('lsSteps').children[lsIdx]?.scrollIntoView({ block: 'nearest' });
+
+    $('lsTable').innerHTML = `<table>
+      <thead><tr><th>Router</th><th>Tentative Cost</th><th>Predecessor</th><th>SPF State</th></tr></thead>
+      <tbody>${nodes.map(n => {
+        const finalized = st.done && st.done.includes(n);
+        return `<tr style="${finalized ? 'background:var(--green-soft);' : ''}">
+          <td><b>Router ${n}</b></td>
+          <td class="mono">${st.dist[n] === Infinity ? '∞' : st.dist[n]}</td>
+          <td>${st.prev[n] || '—'}</td>
+          <td>${finalized ? '<span style="color:var(--green);font-weight:700;">✔ Finalized</span>' : 'Tentative'}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+  }
+
+  window.jumpLs = function(i) { stopLsAuto(); lsIdx = i; renderLs(); };
+
+  function initLs() {
+    stopLsAuto();
+    lsData = runDijkstra($('lsSrc').value, $('lsDst').value, 'weight');
+    lsIdx = 0;
+    renderLs();
+  }
+
+  $('lsPrev').onclick = () => { stopLsAuto(); if (lsIdx > 0) { lsIdx--; renderLs(); } };
+  $('lsNext').onclick = () => { stopLsAuto(); if (lsIdx < lsData.log.length - 1) { lsIdx++; renderLs(); } };
+  $('lsReset').onclick = initLs;
+  $('lsSrc').onchange = initLs;
+  $('lsDst').onchange = initLs;
+  $('lsPlay').onclick = () => {
+    if (lsTimer) { stopLsAuto(); return; }
+    if (lsIdx >= lsData.log.length - 1) lsIdx = 0;
+    $('lsPlay').textContent = '⏸ Pause';
+    lsTimer = setInterval(() => {
+      if (lsIdx < lsData.log.length - 1) { lsIdx++; renderLs(); }
+      else stopLsAuto();
+    }, parseInt($('lsSpeed').value, 10));
+  };
+
+  // ==================== RIP vs OSPF COMPARISON LAB ====================
+  let protoMode = 'both';
+  window.setProtoMode = function(mode) {
+    protoMode = mode;
+    ['modeBoth', 'modeRip', 'modeOspf'].forEach(id => $(id).className = 'btn secondary');
+    if (mode === 'both') $('modeBoth').className = 'btn primary';
+    if (mode === 'rip') $('modeRip').className = 'btn primary';
+    if (mode === 'ospf') $('modeOspf').className = 'btn primary';
+    renderProtoComparison();
+  };
+
+  function renderProtoComparison() {
+    const s = $('protoSrc').value, d = $('protoDst').value;
+    const ripRes = runDijkstra(s, d, 'hop');
+    const ospfRes = runDijkstra(s, d, 'weight');
+
+    const ripEdges = pathEdgeSet(ripRes.path);
+    const ospfEdges = pathEdgeSet(ospfRes.path);
+
+    let realCostOfRipPath = 0;
+    for (let i = 1; i < ripRes.path.length; i++) {
+      const u = ripRes.path[i - 1], v = ripRes.path[i];
+      const found = edges.find(([a, b]) => (a === u && b === v) || (a === v && b === u));
+      if (found) realCostOfRipPath += found[2];
+    }
+
+    $('ripSummaryText').textContent = ripRes.path.length
+      ? `${ripRes.path.join(' → ')} (${ripRes.cost} Hops, Actual Road Cost = ${realCostOfRipPath})`
+      : 'Unreachable';
+
+    $('ospfSummaryText').textContent = ospfRes.path.length
+      ? `${ospfRes.path.join(' → ')} (${ Math.max(0, ospfRes.path.length - 1) } Hops, Total Road Cost = ${ospfRes.cost})`
+      : 'Unreachable';
+
+    const svg = $('protoSvg');
+    let html = '';
+    edges.forEach(([a, b, w, enabled], idx) => {
+      const [x1, y1] = pos[a], [x2, y2] = pos[b];
+      const key = [a, b].sort().join('-');
+      const inRip = enabled && (protoMode === 'both' || protoMode === 'rip') && ripEdges.has(key);
+      const inOspf = enabled && (protoMode === 'both' || protoMode === 'ospf') && ospfEdges.has(key);
+
+      let stroke = '#cbd5e1', width = 3.5, dash = '';
+      if (!enabled) { stroke = '#fecdd3'; dash = '4 6'; }
+      else if (inRip && inOspf) { stroke = '#16a34a'; width = 6.5; }
+      else if (inOspf) { stroke = '#16a34a'; width = 6; }
+      else if (inRip) { stroke = '#d97706'; width = 5.5; dash = '8 5'; }
+
+      html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${stroke}" stroke-width="${width}" stroke-dasharray="${dash}" stroke-linecap="round"/>`;
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      html += `<g class="weight-badge" onclick="editWeight(${idx}, event)">
+        <rect x="${mx - 22}" y="${my - 12}" width="44" height="24" rx="6" fill="#fff" stroke="#cbd5e1"/>
+        <text x="${mx}" y="${my + 4}" class="weight-text">${enabled ? `c=${w}` : '✕'}</text>
+      </g>`;
+    });
+
+    nodes.forEach(n => {
+      const [x, y] = pos[n];
+      const cls = `node ${n === s ? 'src' : ''} ${n === d ? 'dst' : ''}`;
+      html += `<g class="${cls}"><circle cx="${x}" cy="${y}" r="23"/><text x="${x}" y="${y + 5}">${n}</text></g>`;
+    });
+    svg.innerHTML = html;
+  }
+
+  $('protoSrc').onchange = renderProtoComparison;
+  $('protoDst').onchange = renderProtoComparison;
+
+  function refreshAllLabs() {
+    initDv();
+    initLs();
+    renderProtoComparison();
+  }
+
+  // Initial Boot
+  refreshAllLabs();
+
+
+  // Gentle pointer depth: deliberately subtle, disabled on touch/reduced-motion devices.
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.analogy-card, .story-card').forEach(card => {
+      card.addEventListener('pointermove', event => {
+        const rect = card.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width;
+        const y = (event.clientY - rect.top) / rect.height;
+        const rx = (0.5 - y) * 3.2;
+        const ry = (x - 0.5) * 3.2;
+        card.style.transform = `perspective(850px) translateY(-2px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+      });
+      card.addEventListener('pointerleave', () => { card.style.transform = ''; });
+    });
+  }
+
+</script>
+</body>
+</html>
