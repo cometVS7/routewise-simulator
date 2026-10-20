@@ -1,7 +1,6 @@
 # RouteWise: Interactive Network Layer Routing Lab 🌐
 
 [![CA-3 Computer Networks](https://img.shields.io/badge/Project-CA3%20Computer%20Networks-blue.svg)]()
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)]()
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-success.svg)]()
 
 > **Student Author:** Vardhan Shah  
