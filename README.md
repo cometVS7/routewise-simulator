@@ -1,7 +1,7 @@
 # RouteWise: Interactive Network Layer Routing Lab 🌐
 
 [![CA-3 Computer Networks](https://img.shields.io/badge/Project-CA3%20Computer%20Networks-blue.svg)]()
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-success.svg)]()
+[![Live Demo](https://cometvs7.github.io/routewise-simulator/)]()
 
 > **Student Author:** Vardhan Shah  
 > **PRN:** 24070126195  
